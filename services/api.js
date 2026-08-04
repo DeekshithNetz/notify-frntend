@@ -2,9 +2,8 @@
     import AsyncStorage from "@react-native-async-storage/async-storage";
 
     const API = axios.create({
-        baseURL: "http://10.0.2.2:8000"
-    });
-
+  baseURL: "http://192.168.31.134:8000"
+});
     export async function handleSendNotification() {
         try {
             const token = await AsyncStorage.getItem("token");
