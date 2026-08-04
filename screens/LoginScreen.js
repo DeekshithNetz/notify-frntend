@@ -69,7 +69,7 @@ export default function LoginScreen() {
             );
 
 
-
+            
             const allowed =
                 await requestNotificationPermission();
             console.log("allow",allowed);    
