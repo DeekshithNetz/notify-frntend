@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   StatusBar,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,7 +55,7 @@ export default function DashboardScreen() {
 
   async function handleLogout() {
     try {
-      setShowMenu(false); // Close menu immediately
+      setShowMenu(false); 
       await GoogleSignin.signOut();
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("user");
@@ -77,129 +78,128 @@ export default function DashboardScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      {/* ── KeyboardAvoidingView ensures the input field pushes up above the keyboard ── */}
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* ── Top Bar ── */}
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.greeting}>Good to see you,</Text>
-            <Text style={styles.userName}>{user?.name || "User"}</Text>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* ── Top Bar ── */}
+          <View style={styles.topBar}>
+            <View>
+              <Text style={styles.greeting}>Good to see you,</Text>
+              <Text style={styles.userName}>{user?.name || "User"}</Text>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.avatar} 
+              onPress={() => setShowMenu(!showMenu)}
+              activeOpacity={0.6}
+            >
+              <Text style={styles.avatarText}>{initials}</Text>
+            </TouchableOpacity>
           </View>
-          
-          {/* Profile Avatar Button */}
-          <TouchableOpacity 
-            style={styles.avatar} 
-            onPress={() => setShowMenu(!showMenu)}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.avatarText}>{initials}</Text>
-          </TouchableOpacity>
-        </View>
-        <Text>Is Admin: {user?.role === "admin" ? "YES" : "NO"}</Text>
 
-        {/* ── Profile Card ── */}
-        {user && (
-          <View style={styles.card}>
-            <Text style={styles.cardHeading}>Account</Text>
+          {/* ── Profile Card ── */}
+          {user && (
+            <View style={styles.card}>
+              <Text style={styles.cardHeading}>Account</Text>
 
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Name</Text>
-              <Text style={styles.rowValue}>{user.name}</Text>
-               <Text style={styles.rowValue}>{user.role}</Text>
+              <View style={styles.row}>
+                <Text style={styles.rowLabel}>Name</Text>
+                <Text style={styles.rowValue}>{user.name}</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.row}>
+                <Text style={styles.rowLabel}>Email</Text>
+                <Text style={styles.rowValue} numberOfLines={1}>
+                  {user.email}
+                </Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.row}>
+                <Text style={styles.rowLabel}>Role</Text>
+                <View style={styles.roleBadge}>
+                  <Text style={styles.roleBadgeText}>
+                    {user.role?.charAt(0).toUpperCase() + user.role?.slice(1) || "User"}
+                  </Text>
+                </View>
+              </View>
             </View>
+          )}
 
-            <View style={styles.divider} />
-
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Email</Text>
-              <Text style={styles.rowValue} numberOfLines={1}>
-                {user.email}
+          {/* ── Role Based Functionality ── */}
+          {user?.role === "admin" ? (
+            <View style={styles.card}>
+              <Text style={styles.cardHeading}>Compose Notification</Text>
+              <Text style={styles.cardSubtext}>
+                This will be broadcasted to all subscribed users.
               </Text>
+
+              <TextInput
+                style={styles.textInput}
+                placeholder="Write your message here..."
+                placeholderTextColor="#9CA3AF"
+                value={message}
+                onChangeText={setMessage}
+                multiline
+                textAlignVertical="top"
+                maxLength={500}
+              />
+
+              <View style={styles.inputFooter}>
+                <Text style={styles.charCount}>{message.length}/500</Text>
+              </View>
+
+              <TouchableOpacity
+                style={[styles.button, sending && styles.buttonDisabled]}
+                onPress={sendNotification}
+                disabled={sending}
+                activeOpacity={0.7}
+              >
+                {sending ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.buttonText}>Send Notification</Text>
+                )}
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Role</Text>
-              <View style={styles.roleBadge}>
-                <Text style={styles.roleBadgeText}>
-                  {user.role?.charAt(0).toUpperCase() + user.role?.slice(1) || "User"}
+          ) : (
+            <View style={styles.card}>
+              <View style={styles.centerContent}>
+                <View style={styles.subscribedIcon}>
+                  <Text style={styles.subscribedCheck}>✓</Text>
+                </View>
+                <Text style={styles.infoTitle}>You're Subscribed</Text>
+                <Text style={styles.infoBody}>
+                  You will receive push notifications directly on your device when an admin sends an update.
                 </Text>
               </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {/* ── Role Based Functionality ── */}
-        {user?.role === "admin" ? (
-          /* ── Admin: Compose ── */
-          <View style={styles.card}>
-            <Text style={styles.cardHeading}>Compose Notification</Text>
-            <Text style={styles.cardSubtext}>
-              This will be broadcasted to all subscribed users.
-            </Text>
+          {/* Extra bottom space so the input field can scroll high enough above the keyboard */}
+          <View style={styles.bottomPad} />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-            <TextInput
-              style={styles.textInput}
-              placeholder="Write your message here..."
-              placeholderTextColor="#9CA3AF"
-              value={message}
-              onChangeText={setMessage}
-              multiline
-              textAlignVertical="top"
-              maxLength={500}
-            />
-
-            <View style={styles.inputFooter}>
-              <Text style={styles.charCount}>{message.length}/500</Text>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.button, sending && styles.buttonDisabled]}
-              onPress={sendNotification}
-              disabled={sending}
-              activeOpacity={0.7}
-            >
-              {sending ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <Text style={styles.buttonText}>Send Notification</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        ) : (
-          /* ── User: Subscribed Message ── */
-          <View style={styles.card}>
-            <View style={styles.centerContent}>
-              <View style={styles.subscribedIcon}>
-                <Text style={styles.subscribedCheck}>✓</Text>
-              </View>
-              <Text style={styles.infoTitle}>You're Subscribed</Text>
-              <Text style={styles.infoBody}>
-                You will receive push notifications directly on your device when an admin sends an update.
-              </Text>
-            </View>
-          </View>
-        )}
-
-        {/* Bottom padding for scroll */}
-        <View style={styles.bottomPad} />
-      </ScrollView>
-
-      {/* ── Profile Dropdown Menu (Outside ScrollView so it doesn't scroll) ── */}
+      {/* ── Profile Dropdown Menu (Outside KeyboardAvoidingView so it stays put) ── */}
       {showMenu && (
         <>
-          {/* Invisible background to close menu when tapping away */}
           <TouchableOpacity 
             style={styles.menuOverlay} 
             activeOpacity={1} 
             onPress={() => setShowMenu(false)} 
           />
-          {/* The actual menu card */}
           <View style={styles.menuCard}>
             <Text style={styles.menuName} numberOfLines={1}>{user?.name}</Text>
             <Text style={styles.menuEmail} numberOfLines={1}>{user?.email}</Text>
@@ -225,8 +225,13 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    // Properly handles Android status bars/notches without extra libraries
+    // Handles Android Top Status Bar/Notch overlap
     paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
+    // Handles Android Bottom Gesture Navigation Bar overlap
+    paddingBottom: Platform.OS === "android" ? 16 : 0, 
+  },
+  keyboardView: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -235,8 +240,10 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 24,
   },
+  // Generous bottom padding so when the keyboard is open, 
+  // the user can scroll the input field completely into view
   bottomPad: {
-    height: 40,
+    height: 100, 
   },
 
   /* Top Bar */
@@ -427,12 +434,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.05)", // Very subtle native feel
+    backgroundColor: "rgba(0,0,0,0.05)",
     zIndex: 10,
   },
   menuCard: {
     position: "absolute",
-    top: Platform.OS === "android" ? (StatusBar.currentHeight || 0) + 16 : 16,
+    // Dynamically adjusts to sit right below the Android status bar
+    top: Platform.OS === "android" ? (StatusBar.currentHeight || 0) + 16 : 16, 
     right: 24,
     width: 240,
     backgroundColor: "#FFFFFF",
@@ -441,7 +449,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     zIndex: 20,
-    // Clean iOS/Android native shadow
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -473,7 +480,7 @@ const styles = StyleSheet.create({
   menuButtonText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#EF4444", // Soft red for destructive action
+    color: "#EF4444",
   },
   menuArrow: {
     fontSize: 14,

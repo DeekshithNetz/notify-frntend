@@ -6,7 +6,6 @@ import {
   Alert,
   StyleSheet,
   SafeAreaView,
-  KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -18,33 +17,34 @@ import {
   getFCMToken,
 } from "../services/notification";
 import { StatusBar } from "expo-status-bar";
+import Svg, { Path } from "react-native-svg";
 
 GoogleSignin.configure({
-    
   webClientId:
     "424215813666-ap2fnchcu166l6q8tno2ua6tahstsarn.apps.googleusercontent.com",
 });
 
-/* ─── Creative 2x2 Grid "G" Icon (Zero SVGs!) ─── */
-function GoogleG() {
+/* ─── Premium Google "G" Icon ─── */
+function GoogleIcon({ size = 20 }) {
   return (
-    <View style={styles.gWrap}>
-      <View style={[styles.gQuad, { backgroundColor: "#4285F4" }]} />
-      <View style={[styles.gQuad, { backgroundColor: "#EA4335" }]} />
-      <View style={[styles.gQuad, { backgroundColor: "#FBBC05" }]} />
-      <View style={[styles.gQuad, { backgroundColor: "#34A853" }]} />
-      <View style={styles.gHole} />
-    </View>
-  );
-}
-
-/* ─── Playful Feature Pill ─── */
-function Pill({ emoji, text, bgColor, textColor }) {
-  return (
-    <View style={[styles.pill, { backgroundColor: bgColor }]}>
-      <Text style={styles.pillEmoji}>{emoji}</Text>
-      <Text style={[styles.pillText, { color: textColor }]}>{text}</Text>
-    </View>
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+        fill="#4285F4"
+      />
+      <Path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <Path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        fill="#FBBC05"
+      />
+      <Path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        fill="#EA4335"
+      />
+    </Svg>
   );
 }
 
@@ -91,190 +91,145 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        {/* ── Top Spacer ── */}
-        <View style={{ flex: 1 }} />
-
-        {/* ── Logo Section ── */}
-        <View style={styles.logoWrapper}>
-          {/* Creative blob background */}
-          <View style={styles.logoBlob} />
-          {/* Clean white circle */}
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoEmoji}>🔔</Text>
+      <View style={styles.container}>
+        {/* ── Centered Content Block ── */}
+        <View style={styles.centerBlock}>
+          
+          {/* Luxury Monogram Logo */}
+          <View style={styles.monogramWrap}>
+            <View style={styles.monogramCircle}>
+              <Text style={styles.monogramText}>N</Text>
+            </View>
           </View>
+
+          {/* Refined Typography */}
+          <Text style={styles.title}>Notify</Text>
+          <Text style={styles.subtitle}>
+            Smart notifications,{'\n'}delivered instantly.
+          </Text>
+
+          {/* Generous Spacer for Luxury Feel */}
+          <View style={{ height: 48 }} />
+
+          {/* Premium Google Button */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={login}
+            style={styles.button}
+          >
+            <GoogleIcon size={20} />
+            <Text style={styles.buttonText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          {/* Minimalist Terms */}
+          <Text style={styles.termsText}>
+            By continuing, you agree to our{' '}
+            <Text style={styles.termsLink}>Terms</Text> and{' '}
+            <Text style={styles.termsLink}>Privacy Policy</Text>
+          </Text>
         </View>
 
-        {/* ── Title (Matches Dashboard Heading Exactly) ── */}
-        <Text style={styles.title}>Notify</Text>
-
-        {/* ── Subtitle (Matches Dashboard Subtext Exactly) ── */}
-        <Text style={styles.subtitle}>
-          Smart notifications, delivered instantly.
-        </Text>
-
-        {/* ── Creative Cartoony Pills ── */}
-        <View style={styles.pillsRow}>
-          <Pill emoji="⚡" text="Real-time" bgColor="#EFF6FF" textColor="#3B82F6" />
-          <Pill emoji="🛡️" text="Secure" bgColor="#ECFDF5" textColor="#10B981" />
-          <Pill emoji="☁️" text="Cloud" bgColor="#F5F3FF" textColor="#8B5CF6" />
-        </View>
-
-        {/* ── Bottom Spacer ── */}
-        <View style={{ flex: 1.5 }} />
-
-        {/* ── Login Button (Matches Dashboard Button Exactly) ── */}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={login}
-          style={styles.button}
-        >
-          <GoogleG />
-          <Text style={styles.buttonText}>Continue with Google</Text>
-        </TouchableOpacity>
-
-        {/* ── Terms Text ── */}
-        <Text style={styles.termsText}>
-          By continuing, you agree to our{" "}
-          <Text style={styles.termsLink}>Terms</Text> and{" "}
-          <Text style={styles.termsLink}>Privacy Policy</Text>
-        </Text>
-
-        {/* ── Footer ── */}
+        {/* Subtle Footer */}
         <View style={styles.footerRow}>
           <View style={styles.footerDot} />
           <Text style={styles.footerText}>Powered by Notify • v1.0</Text>
         </View>
-        
-        <View style={styles.bottomPad} />
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
 
-/* ─── Styles (Strictly matches Dashboard tokens) ─── */
+/* ─── Styles (Premium, Luxury, & Safe) ─── */
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+    // Prevents Android Top Status Bar/Notch overlap
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
+    // Prevents Android Bottom Gesture Navigation overlap
+    paddingBottom: Platform.OS === "android" ? 16 : 0, 
   },
   container: {
     flex: 1,
-    paddingHorizontal: 24,
     backgroundColor: "#FFFFFF",
-  },
-  bottomPad: {
-    height: 20,
+    paddingHorizontal: 32,
+    justifyContent: "space-between", // Pushes footer to absolute bottom safely
   },
 
-  /* ── Logo ── */
-  logoWrapper: {
-    alignItems: "center",
+  /* ── Center Layout ── */
+  centerBlock: {
+    flex: 1,
     justifyContent: "center",
-    height: 100,
-    marginBottom: 20,
-    position: "relative",
+    alignItems: "center",
   },
-  logoBlob: {
-    position: "absolute",
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#EEF2FF",
-    top: 18,
-    left: "50%",
-    marginLeft: -50,
-    transform: [{ rotate: "-15deg" }],
+
+  /* ── Luxury Monogram ── */
+  monogramWrap: {
+    marginBottom: 28,
   },
-  logoCircle: {
+  monogramCircle: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+    backgroundColor: "#111827", // Matches Dashboard dark elements
     justifyContent: "center",
     alignItems: "center",
-    // Subtle native shadow for premium feel
+    // Subtle shadow for depth (Premium feel)
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
     elevation: 4,
   },
-  logoEmoji: {
+  monogramText: {
     fontSize: 32,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    letterSpacing: -1,
+    marginTop: -2, // Optical centering fix for 'N'
   },
 
-  /* ── Typography (Dashboard matching) ── */
+  /* ── Typography ── */
   title: {
-    fontSize: 26,          // Matches userName
-    fontWeight: "700",     // Matches userName
-    color: "#111827",      // Matches userName
-    letterSpacing: -0.8,   // Matches userName
-    textAlign: "center",
+    fontSize: 34,
+    fontWeight: "800",
+    color: "#111827",
+    letterSpacing: -1.5,
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 14,          // Matches greeting/rowLabel
-    fontWeight: "400",     // Matches greeting/rowLabel
-    color: "#6B7280",      // Matches greeting/rowLabel
-    letterSpacing: -0.2,   // Matches greeting
+    fontSize: 15,
+    fontWeight: "400",
+    color: "#9CA3AF",
     textAlign: "center",
-    marginTop: 8,
-    lineHeight: 20,
+    lineHeight: 24,
+    letterSpacing: 0.2, // Wide tracking for elegance
   },
 
-  /* ── Pills ── */
-  pillsRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: 24,
-  },
-  pill: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 100,
-    gap: 6,
-  },
-  pillEmoji: {
-    fontSize: 13,
-  },
-  pillText: {
-    fontSize: 12,          // Matches charCount/infoBody
-    fontWeight: "600",     // Matches roleBadgeText
-    letterSpacing: 0.2,    // Matches roleBadgeText
-  },
-
-  /* ── Button (Dashboard matching) ── */
+  /* ── Button (Matches Dashboard style strictly) ── */
   button: {
     width: "100%",
-    backgroundColor: "#111827",  // Matches Dashboard button
-    borderRadius: 10,           // Matches Dashboard button
-    paddingVertical: 14,        // Matches Dashboard button
+    backgroundColor: "#111827",
+    borderRadius: 10,
+    paddingVertical: 15,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
     gap: 12,
   },
   buttonText: {
-    fontSize: 15,          // Matches Dashboard buttonText
-    fontWeight: "600",     // Matches Dashboard buttonText
-    color: "#FFFFFF",      // Matches Dashboard buttonText
-    letterSpacing: -0.2,   // Matches Dashboard buttonText
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    letterSpacing: -0.2,
   },
 
   /* ── Terms ── */
   termsText: {
     fontSize: 12,
-    color: "#9CA3AF",      // Matches infoBody
+    color: "#D1D5DB",
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 20,
     lineHeight: 18,
   },
   termsLink: {
@@ -288,41 +243,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    marginTop: 24,
+    marginBottom: 8, // Safe distance from absolute bottom edge
   },
   footerDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#D1D5DB", // Matches signOutArrow
+    backgroundColor: "#D1D5DB",
   },
   footerText: {
     fontSize: 11,
-    color: "#D1D5DB",      // Matches signOutArrow
+    color: "#D1D5DB",
     fontWeight: "500",
     letterSpacing: 0.5,
-  },
-
-  /* ── Creative Google "G" ── */
-  gWrap: {
-    width: 20,
-    height: 20,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  gQuad: {
-    width: "50%",
-    height: "50%",
-  },
-  gHole: {
-    position: "absolute",
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#FFFFFF",
-    top: 6,
-    left: 6,
   },
 });
