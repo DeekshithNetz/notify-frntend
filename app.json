@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "NotificationFrontend",
-    "slug": "NotificationFrontend",
+    "name": "Notify",
+    "slug": "notify",
     "version": "1.0.0",
     "orientation": "portrait",
 
@@ -11,17 +11,22 @@
 
     "userInterfaceStyle": "automatic",
 
-    "newArchEnabled": true,
+    "newArchEnabled": false,
 
     "android": {
       "package": "com.deekshith.notify",
       "googleServicesFile": "./google-services.json",
 
+      "notification": {
+        "icon": "./assets/images/notification.png",
+        "color": "#FF6B35"
+      },
+
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/notification.png",
+        "backgroundImage": "./assets/images/notification.png",
+        "monochromeImage": "./assets/images/notification.png"
       }
     },
 
@@ -31,7 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
